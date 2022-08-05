@@ -13,7 +13,7 @@ public class User {
      @TableId(type = IdType.AUTO)                 //操作相关属性，id自增、表明数据库中相应属性名称
      private Integer id;
      private String username;
-     @JsonIgnore              //忽略password不展示
+//     @JsonIgnore              //忽略password不展示
      private String password;
      private String nickname;
      private String email;

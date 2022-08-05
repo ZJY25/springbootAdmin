@@ -135,6 +135,7 @@ export default {
       pageNum: 1,                   //页码
       pageSize:10,                   //页面大小
       username: "",                 //用户名
+      address: "",                  //地址
       collapseBtnClass: 'el-icon-s-fold',
       isCollapse: false,
       sideWidth: 200,
@@ -147,11 +148,29 @@ export default {
   },
   methods: {
     load(){
+
+
       //请求分页查询数据
-      fetch("http://localhost:9999/user/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize+"&username="+this.username).then(res => res.json()).then(res =>{
-        console.log(res);
-        this.pageSize = 10;
-        this.tableData = res.data;
+
+      //fetch方法，较为复杂，无法拼接
+      // fetch("http://localhost:9999/user/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize+"&username="+this.username+"&address=").then(res => res.json()).then(res => {
+      //   console.log(res);
+      //   this.tableData = res.records;
+      //   this.total = res.total;
+      // })
+
+      //使用axios
+      this.request.get("http://localhost:9999/user/page", {
+        params: {
+          pageNum: this.pageNum,
+          pageSize: this.pageSize,
+          username: this.username,
+          address: this.address
+        }
+      }).then(res =>{                   //这边与fetch不同，不用转化为json
+        console.log(res)
+
+        this.tableData = res.records;
         this.total = res.total;
       })
     },
@@ -170,7 +189,9 @@ export default {
     search() {
       this.load();                        //更新数据
     },
-    handleSizeChange(pageSize) {          //页面大小哦变化触发器
+
+
+    handleSizeChange(pageSize) {          //页面大小变化触发器
       console.log(pageSize);
       this.pageSize = pageSize;           //更新数据
       this.load();                        //加载数据

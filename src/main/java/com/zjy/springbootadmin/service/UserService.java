@@ -45,17 +45,17 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return saveOrUpdate(user);
     }
 
-    //处理分页查询参数
-    public Map<String, Object> selectByPage(Integer pageNum, Integer pageSize, String username) {
-        //根据pageNumber计算sql语句中的参数。
-        //查询第一页(0~pageSize-1)，pageNumber = 1 开始记录下标为 0，查询结果条数为pageSize 不变
-        //查询第二页(pageSize~2*pageSize)，pageNumber = 2 开始记录下标为 （2-1）*pageSize
-        pageNum = (pageNum - 1) * pageSize;
-        Integer count = mapper.selectTotal(username);   //查询总条数
-        Map<String, Object> res = new HashMap<>();
-        List<User> users = mapper.selectByPage(pageNum, pageSize, username);
-        res.put("data", users);
-        res.put("total",count);
-        return res;
-    }
+//    //处理分页查询参数
+//    public Map<String, Object> selectByPage(Integer pageNum, Integer pageSize, String username) {
+//        //根据pageNumber计算sql语句中的参数。
+//        //查询第一页(0~pageSize-1)，pageNumber = 1 开始记录下标为 0，查询结果条数为pageSize 不变
+//        //查询第二页(pageSize~2*pageSize)，pageNumber = 2 开始记录下标为 （2-1）*pageSize
+//        pageNum = (pageNum - 1) * pageSize;
+//        Integer count = mapper.selectTotal(username);   //查询总条数
+//        Map<String, Object> res = new HashMap<>();
+//        List<User> users = mapper.selectByPage(pageNum, pageSize, username);
+//        res.put("data", users);
+//        res.put("total",count);
+//        return res;
+//    }
 }
