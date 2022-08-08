@@ -1,19 +1,17 @@
 package com.zjy.springbootadmin.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjy.springbootadmin.entity.User;
 import com.zjy.springbootadmin.mapper.UserMapper;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService extends ServiceImpl<UserMapper, User> {
-
-    @Resource
-    UserMapper mapper;
 
 
 //    //用自己写的mapper增改数据
@@ -45,7 +43,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return saveOrUpdate(user);
     }
 
-//    //处理分页查询参数
+//    //手动处理分页查询参数
 //    public Map<String, Object> selectByPage(Integer pageNum, Integer pageSize, String username) {
 //        //根据pageNumber计算sql语句中的参数。
 //        //查询第一页(0~pageSize-1)，pageNumber = 1 开始记录下标为 0，查询结果条数为pageSize 不变
@@ -58,4 +56,16 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 //        res.put("total",count);
 //        return res;
 //    }
+
+    //mybatis-plus处理分页＋条件查询
+    public IPage<User> selectMyPage (Integer pN, Integer pS, String uN, String email, String address) {
+        IPage<User> page = new Page<>(pN, pS);                    //分页查询  但与username无关
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();         //处理打包结果
+        //拼接sql条件
+        //like还有一个判空拼接的功能
+        userQueryWrapper.like(Strings.isNotBlank(uN), "username", uN);
+        userQueryWrapper.like(Strings.isNotBlank(email), "email", email);
+        userQueryWrapper.like(Strings.isNotBlank(address), "address", address);
+        return this.page(page, userQueryWrapper);
+    }
 }

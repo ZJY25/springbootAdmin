@@ -1,15 +1,9 @@
 package com.zjy.springbootadmin.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sun.jndi.cosnaming.IiopUrl;
 import com.zjy.springbootadmin.entity.User;
-import com.zjy.springbootadmin.mapper.UserMapper;
 import com.zjy.springbootadmin.service.UserService;
 import io.swagger.annotations.Api;
-import net.sf.jsqlparser.expression.operators.relational.LikeExpression;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,8 +13,6 @@ import java.util.List;
 @RequestMapping("/user")
 @Api(tags = "UserController接口")
 public class UserController {
-//    @Resource
-//    private UserMapper userMapper;
     @Resource
     private UserService userService;
 
@@ -51,14 +43,9 @@ public class UserController {
     public IPage<User> selectByPage(@RequestParam Integer pageNum,
                                     @RequestParam Integer pageSize,
                                     @RequestParam String username,           //required = false 可以使得无参数时null
+                                    @RequestParam String email,
                                     @RequestParam String address){           //defaultValue = ""可以使得无参数时为""
-        IPage<User> page = new Page<>(pageNum,pageSize);                    //分页查询  但与username无关
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();         //处理打包结果
-        //拼接sql条件
-        //like还有一个判空拼接的功能
-        userQueryWrapper.like(Strings.isNotBlank(username), "username", username);
-        userQueryWrapper.like(Strings.isNotBlank(address), "address", address);
-        return userService.page(page,userQueryWrapper);
+        return userService.selectMyPage(pageNum, pageSize, username, email, address);
     }
 
 

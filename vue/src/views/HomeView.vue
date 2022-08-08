@@ -73,28 +73,52 @@
           </el-breadcrumb>
         </div>
 
-        <div style="margin: 10px 0">
-          <el-input style="width: 200px" placeholder="请输入用户名" suffix-icon="el-icon-user-solid" v-model="username"></el-input>
-          <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-message" class="ml-5"></el-input>
-          <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" class="ml-5"></el-input>
-          <el-button class="ml-5" type="primary" @click="search">搜索</el-button>
-        </div>
 
-        <div style="margin: 10px 0">
-          <el-button type="primary">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
+        <div style="margin: 10px 0; float: left">
+          <el-input style="width: 200px" placeholder="请输入用户名" suffix-icon="el-icon-user-solid" v-model="username"></el-input>
+          <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-message" v-model="email" class="ml-5"></el-input>
+          <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" v-model="address" class="ml-5"></el-input>
+          <el-button class="ml-10" type="primary" @click="search">搜索</el-button>
+          <el-button class="ml-10" type="warning" @click="reload">重置</el-button>
+        </div>
+        <div style="margin: 10px 10px; float: left">
+          <el-button type="primary" @click="dialogFormVisible = true">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
           <el-button type="danger">批量删除 <i class="el-icon-remove-outline"></i></el-button>
           <el-button type="primary">导入 <i class="el-icon-bottom"></i></el-button>
           <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>
+          <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="30%">
+            <el-form :model="inputForm">
+              <el-form-item label="用户名" :label-width="formLabelWidth" style="padding-right: 80px">
+                <el-input v-model="inputForm.username" autocomplete="off" ></el-input>
+              </el-form-item>
+              <el-form-item label="昵称" :label-width="formLabelWidth" style="padding-right: 80px">
+                <el-input v-model="inputForm.nickname" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="邮箱" :label-width="formLabelWidth" style="padding-right: 80px">
+                <el-input v-model="inputForm.email" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="电话" :label-width="formLabelWidth" style="padding-right: 80px">
+                <el-input v-model="inputForm.phone" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="地址" :label-width="formLabelWidth" style="padding-right: 80px">
+                <el-input v-model="inputForm.address" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="insert">确 定</el-button>
+            </div>
+          </el-dialog>
         </div>
 
         <el-table :data="tableData" border stripe :header-cell-class-name="headerBg">
-          <el-table-column prop="id" label="ID" width="80">
+          <el-table-column prop="id" label="ID" width="180">
           </el-table-column>
-          <el-table-column prop="username" label="用户名" width="140">
+          <el-table-column prop="username" label="用户名" width="150">
           </el-table-column>
-          <el-table-column prop="nickname" label="昵称" width="120">
+          <el-table-column prop="nickname" label="昵称" width="150">
           </el-table-column>
-          <el-table-column prop="email" label="邮箱" width="120">
+          <el-table-column prop="email" label="邮箱" width="200">
           </el-table-column>
           <el-table-column prop="phone" label="电话">
           </el-table-column>
@@ -107,7 +131,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div style="padding: 10px 0">
+        <div class="pd-10">
           <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -133,9 +157,19 @@ export default {
       tableData: [],                //表格数据
       total: 0,                     //数据总数
       pageNum: 1,                   //页码
-      pageSize:10,                   //页面大小
+      pageSize:10,                  //页面大小
       username: "",                 //用户名
+      email: "",                    //邮箱
       address: "",                  //地址
+      dialogFormVisible: false,    //表单可见
+      inputForm: {
+        username: '',
+        nickname: '',
+        email: '',
+        phone: '',
+        address: '',
+      },
+      formLabelWidth: '100px',
       collapseBtnClass: 'el-icon-s-fold',
       isCollapse: false,
       sideWidth: 200,
@@ -147,7 +181,7 @@ export default {
     this.load();
   },
   methods: {
-    load(){
+    load(){             //加载数据
 
 
       //请求分页查询数据
@@ -162,9 +196,10 @@ export default {
       //使用axios
       this.request.get("http://localhost:9999/user/page", {
         params: {
-          pageNum: this.pageNum,
+          pageNum: this.pageNum,              //查询参数
           pageSize: this.pageSize,
           username: this.username,
+          email: this.email,
           address: this.address
         }
       }).then(res =>{                   //这边与fetch不同，不用转化为json
@@ -174,6 +209,25 @@ export default {
         this.total = res.total;
       })
     },
+    reload() {  //重置
+      this.username = ""
+      this.email = ""
+      this.address = ""
+      this.load()
+    },
+
+    insert() {                //增添一条数据
+      this.dialogFormVisible = false;
+      this.request.post("http://localhost:9999/user", this.inputForm).then(res =>{
+        if (res) {
+          this.$message("保存成功")
+        }else {
+          this.$message("保存失败")
+        }
+        this.load()
+      })
+    },
+
     collapse() {  // 点击收缩按钮触发
       this.isCollapse = !this.isCollapse
       if (this.isCollapse) {  // 收缩
