@@ -106,7 +106,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="insert">确 定</el-button>
+              <el-button type="primary" @click="save">确 定</el-button>
             </div>
           </el-dialog>
         </div>
@@ -126,8 +126,17 @@
           </el-table-column>
           <el-table-column label="操作"  width="200" align="center">
             <template slot-scope="scope">
-              <el-button type="success">编辑 <i class="el-icon-edit"></i></el-button>
-              <el-button type="danger">删除 <i class="el-icon-remove-outline"></i></el-button>
+              <el-button type="success" @click = "edit(scope.row)">编辑 <i class="el-icon-edit"></i></el-button>
+              <el-popconfirm class="ml-5"
+                  confirm-button-text='确定'
+                  cancel-button-text='再想想'
+                  icon="el-icon-info"
+                  icon-color="red"
+                  title="您确定删除吗？"
+                  @confirm="del(scope.row.id)"
+              >
+                <el-button type="danger" slot="reference" >删除 <i class="el-icon-remove-outline"></i></el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -194,7 +203,7 @@ export default {
       // })
 
       //使用axios
-      this.request.get("http://localhost:9999/user/page", {
+      this.request.get("user/page", {
         params: {
           pageNum: this.pageNum,              //查询参数
           pageSize: this.pageSize,
@@ -216,17 +225,35 @@ export default {
       this.load()
     },
 
-    insert() {                //增添一条数据
+    save() {                //增添或修改一条数据
       this.dialogFormVisible = false;
-      this.request.post("http://localhost:9999/user", this.inputForm).then(res =>{
+      this.request.post("user", this.inputForm).then(res =>{
         if (res) {
-          this.$message("保存成功")
+          this.$message.success("保存成功")
         }else {
-          this.$message("保存失败")
+          this.$message.error("保存失败")
         }
         this.load()
       })
     },
+
+    edit(row) {                  //编辑一条数据触发器
+      this.dialogFormVisible = true
+      this.inputForm = JSON.parse(JSON.stringify(row));      //scope传入的row数据,使用parse 防止在保存前修改列表中数据
+    },
+
+    del(id) {
+      this.request.delete("user/" + id).then(res =>{
+        if (res) {
+          this.$message.success("删除成功")
+          this.load()
+        } else {
+          this.$message.error("删除失败")
+          this.load()
+        }
+      })
+    },
+
 
     collapse() {  // 点击收缩按钮触发
       this.isCollapse = !this.isCollapse

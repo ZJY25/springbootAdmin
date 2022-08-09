@@ -66,6 +66,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         userQueryWrapper.like(Strings.isNotBlank(uN), "username", uN);
         userQueryWrapper.like(Strings.isNotBlank(email), "email", email);
         userQueryWrapper.like(Strings.isNotBlank(address), "address", address);
+        userQueryWrapper.orderByDesc("id");                          //根据id倒序展示
         return this.page(page, userQueryWrapper);
     }
 }
