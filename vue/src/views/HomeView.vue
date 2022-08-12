@@ -82,25 +82,34 @@
           <el-button class="ml-10" type="warning" @click="reload">重置</el-button>
         </div>
         <div style="margin: 10px 10px; float: left">
-          <el-button type="primary" @click="dialogFormVisible = true">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
-          <el-button type="danger">批量删除 <i class="el-icon-remove-outline"></i></el-button>
-          <el-button type="primary">导入 <i class="el-icon-bottom"></i></el-button>
-          <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>
+          <el-button type="primary" @click="insert">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
+          <el-popconfirm class="ml-5"
+                         confirm-button-text='确定'
+                         cancel-button-text='再想想'
+                         icon="el-icon-info"
+                         icon-color="red"
+                         title="您确定删除吗？"
+                         @confirm="deleteBatch"
+          >
+            <el-button type="danger" slot="reference">批量删除 <i class="el-icon-remove-outline"></i></el-button>
+          </el-popconfirm>
+          <el-button type="primary" class="ml-5">导入 <i class="el-icon-bottom"></i></el-button>
+          <el-button type="primary" >导出 <i class="el-icon-top"></i></el-button>
           <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="30%">
-            <el-form :model="inputForm">
-              <el-form-item label="用户名" :label-width="formLabelWidth" style="padding-right: 80px">
+            <el-form :model="inputForm" ref="inputForm">
+              <el-form-item label="用户名" prop="username" :label-width="formLabelWidth" style="padding-right: 80px">
                 <el-input v-model="inputForm.username" autocomplete="off" ></el-input>
               </el-form-item>
-              <el-form-item label="昵称" :label-width="formLabelWidth" style="padding-right: 80px">
+              <el-form-item label="昵称" prop="nickname" :label-width="formLabelWidth" style="padding-right: 80px">
                 <el-input v-model="inputForm.nickname" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth" style="padding-right: 80px">
+              <el-form-item label="邮箱" prop="email" :label-width="formLabelWidth" style="padding-right: 80px">
                 <el-input v-model="inputForm.email" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="电话" :label-width="formLabelWidth" style="padding-right: 80px">
+              <el-form-item label="电话" prop="phone" :label-width="formLabelWidth" style="padding-right: 80px">
                 <el-input v-model="inputForm.phone" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="地址" :label-width="formLabelWidth" style="padding-right: 80px">
+              <el-form-item label="地址" prop="address" :label-width="formLabelWidth" style="padding-right: 80px">
                 <el-input v-model="inputForm.address" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
@@ -111,8 +120,17 @@
           </el-dialog>
         </div>
 
-        <el-table :data="tableData" border stripe :header-cell-class-name="headerBg">
-          <el-table-column prop="id" label="ID" width="180">
+        <el-table
+            :data="tableData"
+            border
+            stripe
+            :header-cell-class-name="headerBg"
+            @selection-change="handleSelectionChange">
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
+          <el-table-column prop="id" label="ID" width="50">
           </el-table-column>
           <el-table-column prop="username" label="用户名" width="150">
           </el-table-column>
@@ -164,6 +182,7 @@ export default {
   data() {
     return {
       tableData: [],                //表格数据
+      multipleSelection: [],           //多选内容
       total: 0,                     //数据总数
       pageNum: 1,                   //页码
       pageSize:10,                  //页面大小
@@ -190,7 +209,7 @@ export default {
     this.load();
   },
   methods: {
-    load(){             //加载数据
+    load(){                       //加载数据
 
 
       //请求分页查询数据
@@ -212,20 +231,25 @@ export default {
           address: this.address
         }
       }).then(res =>{                   //这边与fetch不同，不用转化为json
-        console.log(res)
+        console.log("res：" + res)
 
         this.tableData = res.records;
         this.total = res.total;
       })
     },
-    reload() {  //重置
+    insert() {
+      this.dialogFormVisible = true;
+    },
+
+    reload() {               //重置查询
+      this.pageNum = 1
       this.username = ""
       this.email = ""
       this.address = ""
       this.load()
     },
 
-    save() {                //增添或修改一条数据
+    save() {                                        //表单保存，增添或修改一条数据
       this.dialogFormVisible = false;
       this.request.post("user", this.inputForm).then(res =>{
         if (res) {
@@ -233,17 +257,18 @@ export default {
         }else {
           this.$message.error("保存失败")
         }
+        this.$refs.inputForm.resetFields();
         this.load()
       })
     },
 
-    edit(row) {                  //编辑一条数据触发器
+    edit(row) {                  //编辑按钮触发器
       this.dialogFormVisible = true
       this.inputForm = JSON.parse(JSON.stringify(row));      //scope传入的row数据,使用parse 防止在保存前修改列表中数据
     },
 
-    del(id) {
-      this.request.delete("user/" + id).then(res =>{
+    del(id) {                   //删除按钮触发器
+      this.request.delete("user/del/" + id).then(res =>{
         if (res) {
           this.$message.success("删除成功")
           this.load()
@@ -254,8 +279,25 @@ export default {
       })
     },
 
+    handleSelectionChange(val) {          //获取该行id
+      console.log(val)
+      this.multipleSelection = val;        //赋值给multipleSelection
+    },
 
-    collapse() {  // 点击收缩按钮触发
+    deleteBatch(){              //批量删除
+      let ids = this.multipleSelection.map(v => v.id)       //[{}{}{}]->[1,2,3]，数据扁平化处理
+      this.request.post("user/del/batch", ids).then(res =>{
+        if (res) {
+          this.$message.success("批量删除成功")
+          this.load()
+        } else {
+          this.$message.error("批量删除失败")
+          this.load()
+        }
+      })
+    },
+
+    collapse() {                // 点击收缩按钮触发
       this.isCollapse = !this.isCollapse
       if (this.isCollapse) {  // 收缩
         this.sideWidth = 64
@@ -267,7 +309,8 @@ export default {
         this.logoTextShow = true
       }
     },
-    search() {
+    search() {                            //多条件搜索触发器
+      this.pageNum = 1;                   //使得搜索结果从第一页展示
       this.load();                        //更新数据
     },
 
@@ -285,9 +328,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.headerBg {
-  background: #eee!important;
-}
-</style>

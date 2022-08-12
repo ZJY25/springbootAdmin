@@ -66,13 +66,19 @@ public class UserController {
 
 
     //通过id删除记录
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/del/{id}")
     public boolean delete(@PathVariable Integer id){
 //        // 自己写的deleteById
 //        return userMapper.deleteById(id);
 
         //MP的removeById
         return userService.removeById(id);
+    }
+
+    //批量删除
+    @PostMapping("/del/batch")
+    public boolean deleteBatch(@RequestBody List<Integer> ids) {
+        return userService.removeBatchByIds(ids);
     }
 
 }

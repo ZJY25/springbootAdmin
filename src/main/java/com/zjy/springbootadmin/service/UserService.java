@@ -60,13 +60,19 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     //mybatis-plus处理分页＋条件查询
     public IPage<User> selectMyPage (Integer pN, Integer pS, String uN, String email, String address) {
         IPage<User> page = new Page<>(pN, pS);                    //分页查询  但与username无关
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();         //处理打包结果
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();         //添加查询条件
         //拼接sql条件
         //like还有一个判空拼接的功能
         userQueryWrapper.like(Strings.isNotBlank(uN), "username", uN);
         userQueryWrapper.like(Strings.isNotBlank(email), "email", email);
         userQueryWrapper.like(Strings.isNotBlank(address), "address", address);
         userQueryWrapper.orderByDesc("id");                          //根据id倒序展示
+        System.out.println("selectMyPage:");
+        System.out.println(""+pN);
+        System.out.println(""+pS);
+        System.out.println(""+uN);
+        System.out.println(""+email);
+        System.out.println(""+address);
         return this.page(page, userQueryWrapper);
     }
 }
