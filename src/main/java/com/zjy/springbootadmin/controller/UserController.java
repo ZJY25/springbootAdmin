@@ -49,9 +49,10 @@ public class UserController {
                                @RequestParam String email,
                                @RequestParam String address) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(Strings.isBlank(username), "username", username);
-        queryWrapper.like(Strings.isBlank(email), "email", email);
-        queryWrapper.like(Strings.isBlank(address), "address", address);
+        queryWrapper.like(Strings.isNotBlank(username), "username", username);
+        queryWrapper.like(Strings.isNotBlank(email), "email", email);
+        queryWrapper.like(Strings.isNotBlank(address), "address", address);
+        queryWrapper.orderByDesc("id");
         return userService.page(new Page<>(pageNum, pageSize), queryWrapper);
     }
 
