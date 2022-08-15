@@ -1,8 +1,8 @@
-package org.zjy.springbootadmin.service.impl;
+package com.zjy.springbootadmin.service.impl;
 
-import org.zjy.springbootadmin.entity.User;
-import org.zjy.springbootadmin.mapper.UserMapper;
-import org.zjy.springbootadmin.service.IUserService;
+import com.zjy.springbootadmin.entity.User;
+import com.zjy.springbootadmin.mapper.UserMapper;
+import com.zjy.springbootadmin.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

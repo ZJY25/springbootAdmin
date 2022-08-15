@@ -24,7 +24,7 @@ public class generater {
                             .outputDir("D:\\projects\\SpringBoot\\springbootAdmin\\src\\main\\java"); // 指定输出目录
                 })
                 .packageConfig(builder -> {
-                    builder.parent("org.zjy.springbootadmin") // 设置父包名
+                    builder.parent("com.zjy.springbootadmin") // 设置父包名
                             .moduleName(null) // 设置父包模块名
                             .pathInfo(Collections.singletonMap(OutputFile.mapper, "D:\\projects\\SpringBoot\\springbootAdmin\\src\\main\\resources\\mapper")); // 设置mapperXml生成路径
                 })

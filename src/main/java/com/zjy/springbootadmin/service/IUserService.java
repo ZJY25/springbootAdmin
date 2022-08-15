@@ -1,6 +1,6 @@
-package org.zjy.springbootadmin.service;
+package com.zjy.springbootadmin.service;
 
-import org.zjy.springbootadmin.entity.User;
+import com.zjy.springbootadmin.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
