@@ -209,7 +209,7 @@ export default {
     this.load();
   },
   methods: {
-    load(){                       //加载数据
+    load(){                               //加载数据
 
 
       //请求分页查询数据
@@ -224,50 +224,24 @@ export default {
       //使用axios
       this.request.get("user/page", {
         params: {
-          pageNum: this.pageNum,              //查询参数
+          pageNum: this.pageNum,          //查询参数
           pageSize: this.pageSize,
           username: this.username,
           email: this.email,
           address: this.address
         }
-      }).then(res =>{                   //这边与fetch不同，不用转化为json
+      }).then(res =>{                     //这边与fetch不同，不用转化为json
         console.log("res：" + res)
 
         this.tableData = res.records;
         this.total = res.total;
       })
     },
-    insert() {
+    insert() {                            //增
       this.dialogFormVisible = true;
     },
 
-    reload() {               //重置查询
-      this.pageNum = 1
-      this.username = ""
-      this.email = ""
-      this.address = ""
-      this.load()
-    },
-
-    save() {                                        //表单保存，增添或修改一条数据
-      this.dialogFormVisible = false;
-      this.request.post("user", this.inputForm).then(res =>{
-        if (res) {
-          this.$message.success("保存成功")
-        }else {
-          this.$message.error("保存失败")
-        }
-        this.$refs.inputForm.resetFields();
-        this.load()
-      })
-    },
-
-    edit(row) {                  //编辑按钮触发器
-      this.dialogFormVisible = true
-      this.inputForm = JSON.parse(JSON.stringify(row));      //scope传入的row数据,使用parse 防止在保存前修改列表中数据
-    },
-
-    del(id) {                   //删除按钮触发器
+    del(id) {                             //删一条
       this.request.delete("user/del/" + id).then(res =>{
         if (res) {
           this.$message.success("删除成功")
@@ -280,11 +254,11 @@ export default {
     },
 
     handleSelectionChange(val) {          //获取该行id
-      console.log(val)
-      this.multipleSelection = val;        //赋值给multipleSelection
+      console.log(val);
+      this.multipleSelection = val;       //赋值给multipleSelection
     },
 
-    deleteBatch(){              //批量删除
+    deleteBatch(){                        //批量删除
       let ids = this.multipleSelection.map(v => v.id)       //[{}{}{}]->[1,2,3]，数据扁平化处理
       this.request.post("user/del/batch", ids).then(res =>{
         if (res) {
@@ -297,23 +271,49 @@ export default {
       })
     },
 
-    collapse() {                // 点击收缩按钮触发
+    edit(row) {                           //改
+      this.dialogFormVisible = true
+      this.inputForm = JSON.parse(JSON.stringify(row));      //scope传入的row数据,使用parse 防止在保存前修改列表中数据
+    },
+
+    search() {                            //查
+      this.pageNum = 1;                   //使得搜索结果从第一页展示
+      this.load();                        //更新数据
+    },
+
+    reload() {                            //重置查询
+      this.pageNum = 1
+      this.username = ""
+      this.email = ""
+      this.address = ""
+      this.load()
+    },
+
+    save() {                              //表单保存，增添或修改一条数据
+      this.dialogFormVisible = false;
+      this.request.post("user", this.inputForm).then(res =>{
+        if (res) {
+          this.$message.success("保存成功")
+        }else {
+          this.$message.error("保存失败")
+        }
+        this.$refs.inputForm.resetFields();
+        this.load()
+      })
+    },
+
+    collapse() {                          // 点击收缩按钮触发
       this.isCollapse = !this.isCollapse
-      if (this.isCollapse) {  // 收缩
+      if (this.isCollapse) {              // 收缩
         this.sideWidth = 64
         this.collapseBtnClass = 'el-icon-s-unfold'
         this.logoTextShow = false
-      } else {   // 展开
+      } else {                             // 展开
         this.sideWidth = 200
         this.collapseBtnClass = 'el-icon-s-fold'
         this.logoTextShow = true
       }
     },
-    search() {                            //多条件搜索触发器
-      this.pageNum = 1;                   //使得搜索结果从第一页展示
-      this.load();                        //更新数据
-    },
-
 
     handleSizeChange(pageSize) {          //页面大小变化触发器
       console.log(pageSize);
