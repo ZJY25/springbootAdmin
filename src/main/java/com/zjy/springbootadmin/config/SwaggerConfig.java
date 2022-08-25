@@ -39,7 +39,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 
-
     @Bean
     public Docket restApi() {
         return new Docket(DocumentationType.SWAGGER_2)
