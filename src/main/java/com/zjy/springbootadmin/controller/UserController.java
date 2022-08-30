@@ -11,13 +11,15 @@ import java.util.List;
 import com.zjy.springbootadmin.service.IUserService;
 import com.zjy.springbootadmin.entity.User;
 
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  * <p>
  *  前端控制器
  * </p>
  *
  * @author zjy
- * @since 2022-08-15
+ * @since 2022-08-16
  */
 @RestController
 @RequestMapping("/user")
@@ -48,7 +50,7 @@ public class UserController {
                                @RequestParam String username,
                                @RequestParam String email,
                                @RequestParam String address) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<User>queryWrapper = new QueryWrapper<>();
         queryWrapper.like(Strings.isNotBlank(username), "username", username);
         queryWrapper.like(Strings.isNotBlank(email), "email", email);
         queryWrapper.like(Strings.isNotBlank(address), "address", address);
